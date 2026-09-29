@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>html{color-scheme:light dark}img{max-width:100%}[hidden]{display:none!important}body{margin:0}</style>
+</head>
+<body>
+<title>Solo Days in Tokyo</title>
+<!--
+  HOW TO EDIT (for Duke or an AI in a later session)
+  - All content lives in the AREAS and COMBOS arrays in the <script> at the bottom.
+  - Source of truth for the facts: Trip_Info.md, Section 8b (and 8c for coffee).
+  - To record a pick: set  picked: "30 Sep morning"  (any label) on that area. It shows as a green badge.
+  - Photos: 4 per area, Solo_Areas/img/NN-a.jpg … NN-d.jpg (900px wide, Wikimedia Commons). Each photo entry has
+    f (file), cap (place shown), src (Commons file name, used for the credit link). Photos show places, not food/cafés.
+  - Republish: Artifact tool, file_path = Solo_Areas/index.html, files = { "img/NN-x.jpg": "Solo_Areas/img/<name>.jpg", ... }.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@500;700;900&family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+  :root {
+    --bg: #f3f5f4;
+    --surface: #ffffff;
+    --ink: #1b2322;
+    --muted: #5d6a68;
+    --line: #dde3e1;
+    --accent: #27467a;       /* ai-iro indigo */
+    --accent-soft: #e4eaf4;
+    --good: #2f6b45;
+    --good-soft: #e0efe5;
+    --warn: #8a5a00;
+    --warn-soft: #fbf0d9;
+    --shadow: 0 1px 2px rgba(20,30,40,.06), 0 4px 16px rgba(20,30,40,.06);
+    --display: "Zen Kaku Gothic New", "Hiragino Sans", "Helvetica Neue", Arial, sans-serif;
+    --body: "Source Sans 3", "Helvetica Neue", Arial, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --bg: #111517; --surface: #1a2022; --ink: #e6ebea; --muted: #9aa8a6; --line: #2c3437;
+      --accent: #9db5e3; --accent-soft: #223149; --good: #86c79c; --good-soft: #1f3528;
+      --warn: #e8bf6a; --warn-soft: #3a2f17; --shadow: none;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --bg: #111517; --surface: #1a2022; --ink: #e6ebea; --muted: #9aa8a6; --line: #2c3437;
+    --accent: #9db5e3; --accent-soft: #223149; --good: #86c79c; --good-soft: #1f3528;
+    --warn: #e8bf6a; --warn-soft: #3a2f17; --shadow: none;
+  }
+
+  * { box-sizing: border-box; }
+  body { background: var(--bg); color: var(--ink); font: 16px/1.5 var(--body); }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 32px 16px 64px; display: grid; gap: 28px; }
+
+  header { display: grid; gap: 10px; }
+  .eyebrow { font: 500 12px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+  h1 { font: 900 clamp(30px, 5vw, 46px)/1.05 var(--display); margin: 0; text-wrap: balance; }
+  .lede { margin: 0; max-width: 64ch; color: var(--muted); }
+  .lede b { color: var(--ink); }
+
+  /* Slots overview */
+  .slots { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; }
+  .slot { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; display: grid; gap: 6px; align-content: start; }
+  .slot h3 { margin: 0; font: 700 16px/1.2 var(--display); }
+  .slot .when { font: 500 12px/1 var(--mono); color: var(--muted); }
+  .slot p { margin: 0; font-size: 14px; color: var(--muted); }
+  .slot .opts { display: flex; flex-wrap: wrap; gap: 6px; }
+  .opt { font: 600 13px/1 var(--body); padding: 6px 9px; border-radius: 6px; background: var(--accent-soft); color: var(--accent); border: 0; cursor: pointer; }
+  .opt:hover { outline: 1px solid var(--accent); }
+
+  /* Filter bar */
+  .bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); padding-block: 10px; }
+  .bar .lbl { font: 500 12px/1 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-right: 4px; }
+  .chip { font: 600 14px/1 var(--body); padding: 8px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; }
+  .chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+  .chip:focus-visible, .opt:focus-visible, .star:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* Cards */
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 400px), 1fr)); gap: 20px; }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; box-shadow: var(--shadow); display: flex; flex-direction: column; scroll-margin-top: 70px; }
+  .card.flash { outline: 3px solid var(--accent); }
+  .photos { position: relative; display: grid; grid-template-columns: 1fr 1fr; gap: 3px; background: var(--surface); }
+  .photo { position: relative; aspect-ratio: 4 / 3; max-width: 100%; background: var(--line); overflow: hidden; display: block; }
+  .photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .cap { position: absolute; left: 0; right: 0; bottom: 0; padding: 14px 8px 5px; font: 600 12px/1.2 var(--body); color: #fff; background: linear-gradient(transparent, rgba(0,0,0,.65)); }
+  .num { position: absolute; left: 12px; top: 12px; font: 900 18px/1 var(--display); background: var(--surface); color: var(--ink); min-width: 34px; height: 34px; display: grid; place-items: center; border-radius: 8px; padding: 0 6px; }
+  .star { position: absolute; right: 10px; top: 10px; width: 38px; height: 38px; border-radius: 50%; border: 0; background: rgba(0,0,0,.45); color: #fff; font-size: 20px; cursor: pointer; line-height: 1; }
+  .star[aria-pressed="true"] { background: #f2c230; color: #3b2a00; }
+  .body { padding: 16px 18px 18px; display: grid; gap: 12px; }
+  .card h2 { margin: 0; font: 700 21px/1.2 var(--display); text-wrap: balance; }
+  .vibe { margin: 2px 0 0; color: var(--muted); font-size: 15px; }
+  .facts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .fact { background: var(--bg); border-radius: 8px; padding: 8px 10px; }
+  .fact .k { font: 500 11px/1 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 4px; }
+  .fact .v { font-weight: 600; font-size: 15px; }
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tag { font: 600 12px/1 var(--body); padding: 5px 8px; border-radius: 5px; background: var(--accent-soft); color: var(--accent); }
+  .tag.picked { background: var(--good-soft); color: var(--good); }
+  .route { margin: 0; padding: 0; list-style: none; display: grid; gap: 4px; font-size: 15px; }
+  .route li { position: relative; padding-left: 18px; }
+  .route li::before { content: ""; position: absolute; left: 4px; top: .6em; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+  .route li:not(:last-child)::after { content: ""; position: absolute; left: 6.5px; top: calc(.6em + 8px); bottom: -8px; width: 1px; background: var(--line); }
+  .sec .k { font: 500 11px/1 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 6px; }
+  .line { font-size: 15px; margin: 0; }
+  .heads { background: var(--warn-soft); color: var(--warn); border-radius: 8px; padding: 8px 10px; font-size: 14px; margin: 0; }
+  .empty { color: var(--muted); padding: 24px 0; }
+
+  footer { color: var(--muted); font-size: 14px; display: grid; gap: 6px; border-top: 1px solid var(--line); padding-top: 16px; }
+  footer p { margin: 0; max-width: 80ch; }
+  @media (prefers-reduced-motion: no-preference) { .card { transition: outline-color .3s; } html { scroll-behavior: smooth; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <span class="eyebrow">Tokyo · 30 Sep – 2 Oct · base: Akasaka</span>
+    <h1>Solo Days in Tokyo</h1>
+    <p class="lede">Eleven strolling areas to choose from before the group meets on Fri 2 Oct. You need <b>four picks</b>: a light first morning, an evening, a full day, and a short last morning near Akasaka. Tap ☆ to shortlist.</p>
+  </header>
+
+  <section class="slots" id="slots" aria-label="What to pick"></section>
+
+  <nav class="bar" id="bar" aria-label="Filter areas"><span class="lbl">Show</span></nav>
+
+  <main class="grid" id="grid"></main>
+
+  <footer>
+    <p><b>Already covered on group days, so skipped here:</b> Shibuya/Shinjuku (2 Oct), Akihabara (3 Oct), Harajuku/Meiji Jingu (4 Oct), Toyosu/Ariake (5 Oct), Tokyo Station/Ginza (6 Oct). Tsukiji and day trips are out.</p>
+    <p>Closing days are from general knowledge and not verified. Check Google Maps before you go.</p>
+    <p>Photos: Wikimedia Commons (tap any photo for its author and licence). Source: Trip_Info.md §8b, last updated 28 Sep 2026.</p>
+  </footer>
+</div>
+
+<script>
+/* ---------- DATA: edit here ---------- */
+// Trip days: Wed 30 Sep (arrive 06:00, capsule check-in 15:00) · Thu 1 Oct (free all day) · Fri 2 Oct (check out 11:00)
+const SLOTS = [
+  { id: "sep30am", name: "30 Sep morning", when: "Wed · 06:00 land → 15:00 check-in", note: "Jet-lagged, bags maybe with you. Keep it light." },
+  { id: "sep30pm", name: "30 Sep evening", when: "Wed · after a nap", note: "City views at night." },
+  { id: "oct1",    name: "1 Oct full day", when: "Thu · all day free", note: "One big area, or two half-days. iPhone shopping fits here too." },
+  { id: "oct2am",  name: "2 Oct morning",  when: "Fri · before 11:00 check-out", note: "Stay near Akasaka; bags wait at the inn." },
+];
+
+const AREAS = [
+  { n: 1, name: "Akasaka · Nagatacho · Kioicho",
+    photos: [
+      { f: "01-a.jpg", cap: "Hie Shrine torii", src: "Tokyo_Hie-Shrine_Gate.jpg" },
+      { f: "01-b.jpg", cap: "Akasaka Palace", src: "2019 Akasaka Palace 02.jpg" },
+      { f: "01-c.jpg", cap: "Toyokawa Inari", src: "Toyokawa-inari Tokyo 0612150036.jpg" },
+      { f: "01-d.jpg", cap: "Benkei moat", src: "Benkei moat.jpg" } ],
+    vibe: "Your own neighbourhood: quiet shrines, government district, moat walks.",
+    time: "2–3 h", from: "Walk", slots: ["oct2am"],
+    route: ["Hie Shrine: torii tunnel on the Sanno-bashi side", "Toyokawa Inari, a hidden fox shrine", "Akasaka Palace (State Guest House)", "Kioicho and the Benkei moat", "Tokyo Garden Terrace"],
+    food: "Ramen and curry around Akasaka-mitsuke",
+    coffee: "Mametora Akasaka (roast-to-order pour-over, 9:00–20:00)",
+    heads: "Akasaka Palace is closed Wednesdays (check). Fine on Fri 2 Oct." },
+
+  { n: 2, name: "Roppongi · Azabudai Hills · Tokyo Tower",
+    photos: [
+      { f: "02-a.jpg", cap: "Tokyo Tower", src: "Tokyo_Tower_2023.jpg" },
+      { f: "02-b.jpg", cap: "Azabudai Hills", src: "Azabudai Hills 4.jpg" },
+      { f: "02-c.jpg", cap: "Zojoji Temple", src: "Setsubun 2024 in Zojoji 12.jpg" },
+      { f: "02-d.jpg", cap: "Roppongi Hills Sky Deck", src: "Roppongi Hills Mori Tower Sky Deck P2187512.jpg" } ],
+    vibe: "Modern Tokyo: art, towers and city views. Best at sunset or night.",
+    time: "Half day or evening", from: "1–2 stops or 20 min walk", slots: ["sep30pm", "oct2am"],
+    route: ["Azabudai Hills rooftop garden (teamLab Borderless: book ahead)", "Tokyo Tower", "Zojoji Temple, with the tower behind it", "Roppongi Hills: Mori Art Museum + Tokyo City View (open late)", "Tokyo Midtown garden"],
+    food: "Nodaiwa unagi (Higashi-Azabu) is right here",
+    coffee: "Passage Coffee, Mita (AeroPress champion)",
+    heads: "" },
+
+  { n: 3, name: "Asakusa · Kuramae · Sumida River",
+    photos: [
+      { f: "03-a.jpg", cap: "Senso-ji", src: "Sensoji_2023.jpg" },
+      { f: "03-b.jpg", cap: "Kaminarimon gate", src: "Asakusa Sensoji Kaminarimon 2012.JPG" },
+      { f: "03-c.jpg", cap: "Nakamise street", src: "Asakusa sensoji07s3200.jpg" },
+      { f: "03-d.jpg", cap: "Sumida River + Skytree", src: "Azuma Bridge 2.jpg" } ],
+    vibe: "Old Edo: temples, craft shops and a riverside walk.",
+    time: "Half to full day", from: "Ginza line, ~20 min direct", slots: ["sep30am"],
+    route: ["Senso-ji early (empty before 8:00)", "Nakamise and Denbouin-dori", "Walk to Kuramae: craft, coffee and design shops", "Sumida River Walk bridge", "Tokyo Skytree / Solamachi"],
+    food: "Daikokuya tendon · Asakusa Imahan sukiyaki",
+    coffee: "KIELO or Fuglen Asakusa (both open 8:00)",
+    heads: "Leaves Coffee opens Fri–Mon only; Coffee Wrights Kuramae only from 11:00." },
+
+  { n: 4, name: "Yanaka · Nezu · Sendagi (“Yanesen”)",
+    photos: [
+      { f: "04-a.jpg", cap: "Nezu Shrine", src: "Nezu_Shrine_2010.jpg" },
+      { f: "04-b.jpg", cap: "Yanaka Ginza", src: "Yanaka Ginza (52493036385).jpg" },
+      { f: "04-c.jpg", cap: "Yanaka Cemetery", src: "Yanaka cemetery 5.jpg" },
+      { f: "04-d.jpg", cap: "SCAI the Bathhouse", src: "Tokyo - Yanaka 064 - SCAI The Bathhouse (15187739194).jpg" } ],
+    vibe: "Tokyo's best old-town stroll: cats, wooden houses, quiet lanes. Walks straight into Ueno (#11).",
+    time: "Half day", from: "Chiyoda line, ~20 min direct", slots: ["oct1"],
+    route: ["Yanaka Ginza shopping street (snacks)", "Yanaka Cemetery", "Nezu Shrine: orange torii, a quiet Fushimi Inari", "SCAI the Bathhouse gallery (old bathhouse turned art space)", "Walk on to Ueno Park (~15 min) if pairing with #11"],
+    food: "Street snacks on Yanaka Ginza (menchi-katsu, taiyaki)",
+    coffee: "Kayaba Coffee (retro kissaten, 8:00–18:00)",
+    heads: "" },
+
+  { n: 5, name: "Nihonbashi · Marunouchi · Imperial Palace",
+    photos: [
+      { f: "05-a.jpg", cap: "Nijubashi bridge", src: "Seimon_Ishibashi.JPG" },
+      { f: "05-b.jpg", cap: "East Gardens", src: "Ninomaru Grove, East Gardens of the Imperial Palace (9409559884).jpg" },
+      { f: "05-c.jpg", cap: "Tokyo Station", src: "Tokyo Station (Marunouchi Building).jpg" },
+      { f: "05-d.jpg", cap: "Nihonbashi bridge", src: "Nihonbashi 12.jpg" } ],
+    vibe: "Grand and classic. Doubles as your iPhone-buying day.",
+    time: "Half day", from: "Marunouchi line, ~10 min", slots: ["oct1"],
+    route: ["Imperial Palace East Gardens", "Nijubashi bridge", "Marunouchi Naka-dori (tree-lined street)", "Bic Camera Yurakucho: iPhone, tax-free (bring passport)", "Nihonbashi bridge", "Mitsukoshi depachika food halls"],
+    food: "Kaneko Hannosuke tendon · Rokurinsha tsukemen (Tokyo Stn)",
+    coffee: "Glitch Nihonbashi · Geshary Hibiya",
+    heads: "East Gardens are closed Mon and Fri (check). Open on Thu 1 Oct." },
+
+  { n: 6, name: "Kagurazaka · Iidabashi",
+    photos: [
+      { f: "06-a.jpg", cap: "Kagurazaka-dori", src: "KagurazakaStreet.JPG" },
+      { f: "06-b.jpg", cap: "Stone-paved alley", src: "Kagurazaka street.jpg" },
+      { f: "06-c.jpg", cap: "Old wooden house", src: "Kagurazaka street 2.jpg" },
+      { f: "06-d.jpg", cap: "Kagurazaka at night", src: "神楽坂夜景.jpg" } ],
+    vibe: "“Little Paris”: stone-paved geisha lanes and French cafés.",
+    time: "2–3 h", from: "Namboku line, ~10 min", slots: ["oct1"],
+    route: ["Kagurazaka-dori", "Back alleys Hyogo-yokocho and Kakurenbo-yokocho", "Akagi Shrine (Kengo Kuma design)", "Zenkoku-ji", "Sotobori moat: Canal Café by the water"],
+    food: "Small shops and Japanese sweets",
+    coffee: "Hayakawa Coffee, Iidabashi (hand drip)",
+    heads: "Hayakawa is closed Tue and Wed. Open on Thu 1 Oct." },
+
+  { n: 7, name: "Nakameguro · Daikanyama · Ebisu",
+    photos: [
+      { f: "07-a.jpg", cap: "Meguro River (spring)", src: "Meguro_River_Spring_2014(2).jpg" },
+      { f: "07-b.jpg", cap: "Meguro River walk", src: "Walk along Meguro river near Nakameguro 3.jpg" },
+      { f: "07-c.jpg", cap: "Daikanyama T-Site", src: "Daikanyama T-SITE 2016-04-04.jpg" },
+      { f: "07-d.jpg", cap: "Ebisu Garden Place", src: "Illuminations in Ebisu Garden Place 2.jpg" } ],
+    vibe: "Stylish riverside, boutiques and cafés. (First photo is spring; no blossoms in October.)",
+    time: "Half day", from: "Chiyoda → Hibiya line, ~20 min", slots: ["oct1"],
+    route: ["Meguro River walk + Starbucks Reserve Roastery", "Daikanyama T-Site bookstore and Log Road", "Ebisu Garden Place", "Ebisu Yokocho izakaya alley at night"],
+    food: "AFURI (original Ebisu branch) · Ichiran",
+    coffee: "Onibus Coffee Nakameguro · Sarutahiko Ebisu",
+    heads: "" },
+
+  { n: 8, name: "Kiyosumi-Shirakawa · Monzen-Nakacho",
+    photos: [
+      { f: "08-a.jpg", cap: "Kiyosumi Garden", src: "Kiyosumi-1.JPG" },
+      { f: "08-b.jpg", cap: "Stepping stones", src: "Kiyosumi-5.JPG" },
+      { f: "08-c.jpg", cap: "Tomioka Hachimangu", src: "Tomioka Hachiman-gu 2008 August.jpg" },
+      { f: "08-d.jpg", cap: "Fukagawa Fudo-do", src: "Fukagawa Fudodo New Main Hall from the right.jpg" } ],
+    vibe: "Tokyo's coffee district: gardens and a local, low-key feel.",
+    time: "Half day", from: "Hanzomon line, ~20 min", slots: ["sep30am"],
+    route: ["Kiyosumi Garden: stepping stones across the pond", "Blue Bottle's first Japan café", "Museum of Contemporary Art Tokyo (MOT)", "Tomioka Hachimangu / Fukagawa Fudo-do"],
+    food: "Fukagawa-meshi (local clam rice)",
+    coffee: "Blue Bottle flagship · Koffee Mameya Kakeru (book ahead)",
+    heads: "Koffee Mameya Kakeru needs a reservation and is closed Fri." },
+
+  { n: 9, name: "Shimokitazawa (– Sangenjaya)",
+    photos: [
+      { f: "09-a.jpg", cap: "Shimokitazawa street", src: "Shimokitazawa_Street_2015.jpg" },
+      { f: "09-b.jpg", cap: "Vintage shops", src: "Walk in Shimokitazawa 6.jpg" },
+      { f: "09-c.jpg", cap: "Shimokitazawa lanes", src: "Walk in Shimokitazawa 4.jpg" },
+      { f: "09-d.jpg", cap: "Sangenjaya", src: "Sangenjaya -02.jpg" } ],
+    vibe: "Bohemian: vintage clothes, indie shops, back-alley bars.",
+    time: "Half day or evening", from: "Chiyoda + Odakyu, ~25 min", slots: ["oct1"],
+    route: ["Vintage shops (Flamingo, New York Joe Exchange)", "Reload and Bonus Track", "Cafés along the Green Line park", "Sangenjaya “Sankaku-chitai” alleys at night"],
+    food: "Curry is big here (soup curry, spice curry)",
+    coffee: "Light Up Coffee · Ogawa Coffee Laboratory",
+    heads: "" },
+
+  { n: 10, name: "Kichijoji · Inokashira Park",
+    photos: [
+      { f: "10-a.jpg", cap: "Inokashira Park", src: "Inokasirakoen-1.JPG" },
+      { f: "10-b.jpg", cap: "Swan boats", src: "Swan Boat (10507765895).jpg" },
+      { f: "10-c.jpg", cap: "Ghibli Museum", src: "Ghibli Museum, Mitaka, Tokyo, 20240823 1131 5545.jpg" },
+      { f: "10-d.jpg", cap: "Harmonica Yokocho", src: "In Harmonica Yokocho, Kichijoji (53417121000).jpg" } ],
+    vibe: "Relaxed west Tokyo: a big park and covered shopping streets.",
+    time: "Half day", from: "Marunouchi + JR Chuo, ~35 min", slots: ["oct1"],
+    route: ["Inokashira Park: pond and swan boats", "Ghibli Museum (advance tickets only)", "Harmonica Yokocho alley", "Sun Road arcade"],
+    food: "Satou menchi-katsu (famous queue)",
+    coffee: "Light Up Coffee Kichijoji",
+    heads: "Ghibli Museum tickets sell out months ahead; closed Tue." },
+
+  { n: 11, name: "Ueno Park · Ameyoko",
+    photos: [
+      { f: "11-a.jpg", cap: "Kiyomizu Kannon-do", src: "KiyomizuKannondo 05.JPG" },
+      { f: "11-b.jpg", cap: "Ueno Toshogu", src: "Toshogu Shrine @ Ueno Park (14038511931).jpg" },
+      { f: "11-c.jpg", cap: "Shinobazu Pond", src: "Ueno Park Lotus Flowers in 2024.jpg" },
+      { f: "11-d.jpg", cap: "Ameyoko market", src: "Ameyoko Shopping Streets, Ueno (53416667926).jpg" } ],
+    vibe: "Big park full of museums and shrines, then a loud, cheap market street.",
+    time: "Half day", from: "Ginza line, ~15 min direct", slots: ["sep30am", "oct1"],
+    route: ["Kiyomizu Kannon-do and its round “moon pine”", "Shinobazu Pond and Bentendo hall (lotus pond)", "Ueno Toshogu: gold-leaf shrine gate", "Tokyo National Museum (Japan's biggest art collection)", "Ameyoko market under the train tracks"],
+    food: "Unatoto Ueno (cheap unagi bowl) · Naruse's Unagi, Higashi-Ueno",
+    coffee: "Kayaba Coffee is a 15 min walk (Yanaka side)",
+    heads: "Tokyo National Museum is closed Mondays (check). Open Wed 30 Sep and Thu 1 Oct. Akihabara (group day, 3 Oct) is one stop away." },
+];
+
+// Suggested pairings shown in each slot box (area numbers)
+const COMBOS = {
+  sep30am: [3, 8, 11],
+  sep30pm: [2],
+  oct1:    ["4+11", "5+6", "7+9"],
+  oct2am:  [1, 2],
+};
+/* ---------- END DATA ---------- */
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const slotName = id => SLOTS.find(s => s.id === id)?.name ?? id;
+const areaName = n => AREAS.find(a => a.n === n)?.name.split(" ·")[0].split(" (")[0];
+
+let stars = new Set();
+try { stars = new Set(JSON.parse(localStorage.getItem("soloStars") || "[]")); } catch (e) {}
+const saveStars = () => { try { localStorage.setItem("soloStars", JSON.stringify([...stars])); } catch (e) {} };
+let filter = "all";
+
+function renderSlots() {
+  $("#slots").innerHTML = SLOTS.map(s => `
+    <div class="slot">
+      <span class="when">${esc(s.when)}</span>
+      <h3>${esc(s.name)}</h3>
+      <p>${esc(s.note)}</p>
+      <div class="opts">${COMBOS[s.id].map(c => {
+        const nums = String(c).split("+").map(Number);
+        return `<button class="opt" data-go="${nums[0]}">#${nums.join(" + #")} ${esc(nums.map(areaName).join(" + "))}</button>`;
+      }).join("")}</div>
+    </div>`).join("");
+}
+
+function renderBar() {
+  const opts = [["all", `All ${AREAS.length}`], ...SLOTS.map(s => [s.id, s.name]), ["star", "☆ Shortlist"]];
+  $("#bar").innerHTML = `<span class="lbl">Show</span>` + opts.map(([id, label]) =>
+    `<button class="chip" id="f-${id}" data-f="${id}" aria-pressed="${filter === id}">${esc(label)}${id === "star" ? ` (${stars.size})` : ""}</button>`).join("");
+}
+
+function renderCards() {
+  const list = AREAS.filter(a => filter === "all" || (filter === "star" ? stars.has(a.n) : a.slots.includes(filter)));
+  $("#grid").innerHTML = list.length ? list.map(a => `
+    <article class="card" id="area-${a.n}">
+      <div class="photos">
+        ${a.photos.map(p => `
+        <a class="photo" href="https://commons.wikimedia.org/wiki/File:${encodeURIComponent(p.src.replace(/ /g, "_"))}" target="_blank" rel="noopener" title="Photo: Wikimedia Commons (tap for author and licence)">
+          <img src="img/${p.f}" alt="${esc(p.cap)}" loading="lazy">
+          <span class="cap">${esc(p.cap)}</span>
+        </a>`).join("")}
+        <span class="num">${a.n}</span>
+        <button class="star" data-star="${a.n}" aria-pressed="${stars.has(a.n)}" aria-label="Shortlist ${esc(a.name)}">${stars.has(a.n) ? "★" : "☆"}</button>
+      </div>
+      <div class="body">
+        <div>
+          <h2>${esc(a.name)}</h2>
+          <p class="vibe">${esc(a.vibe)}</p>
+        </div>
+        <div class="tags">
+          ${a.picked ? `<span class="tag picked">✓ Picked: ${esc(a.picked)}</span>` : ""}
+          ${a.slots.map(s => `<span class="tag">Fits ${esc(slotName(s))}</span>`).join("")}
+        </div>
+        <div class="facts">
+          <div class="fact"><span class="k">Time</span><span class="v">${esc(a.time)}</span></div>
+          <div class="fact"><span class="k">From Akasaka</span><span class="v">${esc(a.from)}</span></div>
+        </div>
+        <div class="sec"><span class="k">Stroll route</span>
+          <ol class="route">${a.route.map(r => `<li>${esc(r)}</li>`).join("")}</ol>
+        </div>
+        <div class="sec"><span class="k">Eat</span><p class="line">${esc(a.food)}</p></div>
+        <div class="sec"><span class="k">Coffee</span><p class="line">${esc(a.coffee)}</p></div>
+        ${a.heads ? `<p class="heads">${esc(a.heads)}</p>` : ""}
+      </div>
+    </article>`).join("") : `<p class="empty">Nothing shortlisted yet. Tap ☆ on a photo to add it.</p>`;
+}
+
+function render() { renderBar(); renderCards(); }
+
+document.addEventListener("click", e => {
+  const f = e.target.closest("[data-f]");
+  if (f) { filter = f.dataset.f; render(); return; }
+  const s = e.target.closest("[data-star]");
+  if (s) { const n = +s.dataset.star; stars.has(n) ? stars.delete(n) : stars.add(n); saveStars(); render(); return; }
+  const g = e.target.closest("[data-go]");
+  if (g) {
+    if (filter !== "all") { filter = "all"; render(); }
+    const card = document.getElementById("area-" + g.dataset.go);
+    card.scrollIntoView({ block: "start" });
+    card.classList.add("flash"); setTimeout(() => card.classList.remove("flash"), 1400);
+  }
+});
+
+renderSlots();
+render();
+</script>
+</body>
+</html>
