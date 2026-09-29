@@ -9,7 +9,7 @@
 <title>Solo Days in Tokyo</title>
 <!--
   HOW TO EDIT (for Duke or an AI in a later session)
-  - All content lives in the AREAS and COMBOS arrays in the <script> at the bottom.
+  - All content lives in the AREAS, COMBOS and PLAN objects in the <script> at the bottom.
   - Source of truth for the facts: Trip_Info.md, Section 8b (and 8c for coffee).
   - To record a pick: set  picked: "30 Sep morning"  (any label) on that area. It shows as a green badge.
   - Photos: 4 per area, Solo_Areas/img/NN-a.jpg … NN-d.jpg (900px wide, Wikimedia Commons). Each photo entry has
@@ -109,6 +109,18 @@
   .heads { background: var(--warn-soft); color: var(--warn); border-radius: 8px; padding: 8px 10px; font-size: 14px; margin: 0; }
   .empty { color: var(--muted); padding: 24px 0; }
 
+  /* Day plan */
+  .plan { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; display: grid; gap: 12px; box-shadow: var(--shadow); }
+  .plan h2 { margin: 0; font: 700 21px/1.2 var(--display); }
+  .plan .sub { margin: 0; color: var(--muted); font-size: 15px; }
+  .steps { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; }
+  .steps li { display: grid; grid-template-columns: 52px 1fr; gap: 10px; }
+  .steps .t { font: 500 13px/1.5 var(--mono); color: var(--accent); }
+  .steps .d { font-size: 15px; }
+  .steps .d b { font-weight: 700; }
+  .steps .d span { display: block; color: var(--muted); font-size: 14px; }
+  .steps li.move .d { color: var(--muted); font-size: 14px; }
+
   footer { color: var(--muted); font-size: 14px; display: grid; gap: 6px; border-top: 1px solid var(--line); padding-top: 16px; }
   footer p { margin: 0; max-width: 80ch; }
   @media (prefers-reduced-motion: no-preference) { .card { transition: outline-color .3s; } html { scroll-behavior: smooth; } }
@@ -122,6 +134,8 @@
   </header>
 
   <section class="slots" id="slots" aria-label="What to pick"></section>
+
+  <section class="plan" id="plan" aria-label="1 Oct plan"></section>
 
   <nav class="bar" id="bar" aria-label="Filter areas"><span class="lbl">Show</span></nav>
 
@@ -223,7 +237,7 @@ const AREAS = [
     coffee: "Hayakawa Coffee, Iidabashi (hand drip)",
     heads: "Hayakawa is closed Tue and Wed. Open on Thu 1 Oct." },
 
-  { n: 7, name: "Nakameguro · Daikanyama · Ebisu",
+  { n: 7, name: "Nakameguro · Daikanyama · Ebisu", picked: "1 Oct afternoon",
     photos: [
       { f: "07-a.jpg", cap: "Meguro River (spring)", src: "Meguro_River_Spring_2014(2).jpg" },
       { f: "07-b.jpg", cap: "Meguro River walk", src: "Walk along Meguro river near Nakameguro 3.jpg" },
@@ -236,18 +250,18 @@ const AREAS = [
     coffee: "Onibus Coffee Nakameguro · Sarutahiko Ebisu",
     heads: "" },
 
-  { n: 8, name: "Kiyosumi-Shirakawa · Monzen-Nakacho",
+  { n: 8, name: "Kiyosumi-Shirakawa · Monzen-Nakacho", picked: "1 Oct morning",
     photos: [
       { f: "08-a.jpg", cap: "Kiyosumi Garden", src: "Kiyosumi-1.JPG" },
       { f: "08-b.jpg", cap: "Stepping stones", src: "Kiyosumi-5.JPG" },
       { f: "08-c.jpg", cap: "Tomioka Hachimangu", src: "Tomioka Hachiman-gu 2008 August.jpg" },
       { f: "08-d.jpg", cap: "Fukagawa Fudo-do", src: "Fukagawa Fudodo New Main Hall from the right.jpg" } ],
     vibe: "Tokyo's coffee district: gardens and a local, low-key feel.",
-    time: "Half day", from: "Hanzomon line, ~20 min", slots: ["sep30am"],
+    time: "Half day", from: "Hanzomon line, ~20 min", slots: ["sep30am", "oct1"],
     route: ["Kiyosumi Garden: stepping stones across the pond", "Blue Bottle's first Japan café", "Museum of Contemporary Art Tokyo (MOT)", "Tomioka Hachimangu / Fukagawa Fudo-do"],
     food: "Fukagawa-meshi (local clam rice)",
     coffee: "Blue Bottle flagship · Koffee Mameya Kakeru (book ahead)",
-    heads: "Koffee Mameya Kakeru needs a reservation and is closed Fri." },
+    heads: "Koffee Mameya Kakeru needs a reservation and is closed Fri. 1 Oct is a monthly fair day (1st, 15th, 28th): food stalls on the approach to Fudo-do." },
 
   { n: 9, name: "Shimokitazawa (– Sangenjaya)",
     photos: [
@@ -293,8 +307,30 @@ const AREAS = [
 const COMBOS = {
   sep30am: [3, 8, 11],
   sep30pm: [2],
-  oct1:    ["4+11", "5+6", "7+9"],
+  oct1:    ["8+7", "4+11", "5+6", "7+9"],
   oct2am:  [1, 2],
+};
+// The chosen full-day plan (Thu 1 Oct). Times are rough; move = transit leg.
+const PLAN = {
+  title: "Thu 1 Oct: Fukagawa to Nakameguro",
+  sub: "#8 in the morning (it's a fair day), then across town for #7 in the afternoon and evening. About 8–10 km on foot.",
+  steps: [
+    { t: "08:00", move: true, d: "Akasaka-mitsuke → Nagatacho, Hanzomon line direct to Kiyosumi-Shirakawa (~20 min)" },
+    { t: "08:30", d: "<b>Blue Bottle Kiyosumi</b>, the first one in Japan. Coffee and a light breakfast" },
+    { t: "09:00", d: "<b>Kiyosumi Garden</b> opens. Stepping stones across the pond", s: "~45 min" },
+    { t: "10:00", d: "<b>Fukagawa Edo Museum</b>: a full-size 1840s Edo street", s: "Optional. Skip it if you're running late" },
+    { t: "10:40", move: true, d: "Walk south to Monzen-Nakacho (~20 min), or Oedo line, 1 stop" },
+    { t: "11:00", d: "<b>Fukagawa Fudo-do</b>: goma fire ritual (drums, chanting, flames), then the crystal Buddha corridor", s: "Arrive ~10 min early for a seat. No photos during the ritual" },
+    { t: "12:00", d: "<b>Fair stalls</b> on the approach street, then <b>Tomioka Hachimangu</b>: Yokozuna monument and golden mikoshi" },
+    { t: "12:45", d: "<b>Lunch: fukagawa-meshi</b> (clam rice) near the station" },
+    { t: "13:45", move: true, d: "Tozai line 1 stop to Kayabacho → Hibiya line to Naka-meguro, the last stop (~35 min)" },
+    { t: "14:30", d: "<b>Meguro River walk</b>, <b>Onibus Coffee</b> or the <b>Starbucks Reserve Roastery</b>", s: "No cherry blossoms in October, but the riverside shops and cafés are still good" },
+    { t: "16:00", d: "Walk uphill to <b>Daikanyama</b> (~10 min): <b>T-Site</b> bookstore, <b>Log Road</b>, Hillside Terrace boutiques" },
+    { t: "17:30", d: "Sunset is around 17:30. Walk on to <b>Ebisu</b> (~15 min)", s: "Ebisu Garden Place if you have the energy" },
+    { t: "18:30", d: "<b>Dinner in Ebisu</b>: AFURI yuzu ramen, or <b>Ebisu Yokocho</b> izakaya alley" },
+    { t: "20:30", move: true, d: "Back to Akasaka: Hibiya line → Kasumigaseki → Chiyoda line, or JR to Shibuya → Ginza line (~20–25 min)" },
+  ],
+  heads: "Not verified: the goma times (roughly every 2 h from 9:00) and Edo Museum hours. Check both on Google Maps the day before. Skip MOT on this day; there isn't time.",
 };
 /* ---------- END DATA ---------- */
 
@@ -363,6 +399,18 @@ function renderCards() {
     </article>`).join("") : `<p class="empty">Nothing shortlisted yet. Tap ☆ on a photo to add it.</p>`;
 }
 
+// PLAN text is authored here (not user input), so <b> tags are allowed in d.
+function renderPlan() {
+  $("#plan").innerHTML = `
+    <span class="eyebrow">Your full day</span>
+    <h2>${esc(PLAN.title)}</h2>
+    <p class="sub">${esc(PLAN.sub)}</p>
+    <ol class="steps">${PLAN.steps.map(x => `
+      <li${x.move ? ' class="move"' : ""}><span class="t">${esc(x.t)}</span><span class="d">${x.move ? "🚇 " : ""}${x.d}${x.s ? `<span>${esc(x.s)}</span>` : ""}</span></li>`).join("")}
+    </ol>
+    <p class="heads">${esc(PLAN.heads)}</p>`;
+}
+
 function render() { renderBar(); renderCards(); }
 
 document.addEventListener("click", e => {
@@ -380,6 +428,7 @@ document.addEventListener("click", e => {
 });
 
 renderSlots();
+renderPlan();
 render();
 </script>
 </body>
